@@ -8,6 +8,7 @@ import subprocess
 from pydub import AudioSegment
 import time
 import sys
+import webbrowser # New: Import webbrowser for opening links
 
 # --- Configuration and Constants ---
 # NOTE: The 'ffmpeg' executable must be installed and accessible in your system's PATH
@@ -44,6 +45,12 @@ class BulkFileProcessor(tk.Tk):
         self.conflict_policy = tk.StringVar(value="auto_rename") # 'skip', 'overwrite', 'auto_rename'
 
         self.create_widgets()
+
+    def open_ffmpeg_guide(self, event):
+        """Opens the FFmpeg documentation in a web browser."""
+        # Using the official FFmpeg documentation link for reference
+        url = "https://ffmpeg.org/documentation.html" 
+        webbrowser.open_new_tab(url)
 
     def create_widgets(self):
         """Sets up the main application UI components."""
@@ -99,6 +106,11 @@ class BulkFileProcessor(tk.Tk):
         ttk.Label(conversion_frame, text="FFmpeg Params (e.g., '-b:a 192k' or '-vcodec libx264'):").grid(row=2, column=0, sticky='w', padx=5, pady=2)
         ttk.Entry(conversion_frame, textvariable=self.conversion_params).grid(row=2, column=1, sticky='ew', padx=5, pady=2)
         conversion_frame.grid_columnconfigure(1, weight=1)
+
+        # New: FFmpeg Guide Link
+        link_label = ttk.Label(conversion_frame, text="Quick FFmpeg Parameter Guide (Click Here)", foreground="blue", cursor="hand2")
+        link_label.grid(row=3, column=0, columnspan=2, sticky='w', padx=5, pady=5)
+        link_label.bind("<Button-1>", self.open_ffmpeg_guide)
 
         # --- Process Button ---
         ttk.Button(self, text="4. START PROCESS (Copy/Convert/Rename)", command=self.process_files, style='Accent.TButton').pack(fill='x', padx=10, pady=10)
@@ -174,6 +186,7 @@ class BulkFileProcessor(tk.Tk):
             target_ext = original_ext
             
         final_path = pathlib.Path(self.target_dir.get()) / (new_name + target_ext)
+            
         return final_path
 
     def get_unique_output_path(self, target_path):
